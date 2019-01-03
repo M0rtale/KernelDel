@@ -1,0 +1,91 @@
+;
+; Free_And_Delete_Kernel.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=Free_And_Delete_Kernel.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Free_And_Delete_Kernel.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%Free_And_Delete_Kernel.DeviceDesc%=Free_And_Delete_Kernel_Device, Root\Free_And_Delete_Kernel ; TODO: edit hw-id
+
+[Free_And_Delete_Kernel_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+Free_And_Delete_Kernel.sys
+
+;-------------- Service installation
+[Free_And_Delete_Kernel_Device.NT.Services]
+AddService = Free_And_Delete_Kernel,%SPSVCINST_ASSOCSERVICE%, Free_And_Delete_Kernel_Service_Inst
+
+; -------------- Free_And_Delete_Kernel driver install sections
+[Free_And_Delete_Kernel_Service_Inst]
+DisplayName    = %Free_And_Delete_Kernel.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\Free_And_Delete_Kernel.sys
+LoadOrderGroup = Extended Base
+
+;
+;--- Free_And_Delete_Kernel_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+Free_And_Delete_Kernel_Device_CoInstaller_CopyFiles = 11
+
+[Free_And_Delete_Kernel_Device.NT.CoInstallers]
+AddReg=Free_And_Delete_Kernel_Device_CoInstaller_AddReg
+CopyFiles=Free_And_Delete_Kernel_Device_CoInstaller_CopyFiles
+
+[Free_And_Delete_Kernel_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[Free_And_Delete_Kernel_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[SourceDisksFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+[Free_And_Delete_Kernel_Device.NT.Wdf]
+KmdfService =  Free_And_Delete_Kernel, Free_And_Delete_Kernel_wdfsect
+[Free_And_Delete_Kernel_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="" ; TODO: add ManufacturerName
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "Free_And_Delete_Kernel Installation Disk"
+Free_And_Delete_Kernel.DeviceDesc = "Free_And_Delete_Kernel Device"
+Free_And_Delete_Kernel.SVCDESC = "Free_And_Delete_Kernel Service"
