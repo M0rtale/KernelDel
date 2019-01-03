@@ -17,7 +17,7 @@ extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject, PUNICODE_STRING pR
 	pDriverObject->DriverUnload = UnloadDriver;
 
 	_Free_Delete = new Free_Delete();
-	_Free_Delete->Delete_Model(L"\\??\\C:\\D.EXE");
+	_Free_Delete->Delete_Model(L"\\??\\C:\\D.EXE"); // setup IOControl to enable customization
 
 	return STATUS_SUCCESS;
 
